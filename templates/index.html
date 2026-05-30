@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Curtain OS – Robo Manthan</title>
+    <meta name="description" content="Smart curtain motor controller dashboard with gesture and manual control.">
+    <meta name="theme-color" content="#080b1a">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Orbitron:wght@500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/static/css/style.css">
+</head>
+<body>
+
+<!-- Ambient glow (Navis pattern) -->
+<div class="bg-glow">
+    <div class="glow-orb orb-1"></div>
+    <div class="glow-orb orb-2"></div>
+    <div class="glow-orb orb-3"></div>
+</div>
+<div class="overlay" id="overlay"></div>
+
+<div class="app-container">
+
+    <!-- ── Navbar ─────────────────────────────────────────────── -->
+    <nav class="navbar">
+        <div class="nav-brand">
+            <div class="brand-text">
+                <div class="brand-name">CURTAIN OS</div>
+                <div class="brand-tagline">Motor Control Dashboard · Robo Manthan</div>
+            </div>
+        </div>
+        <div class="nav-right">
+            <div class="connection-badge" id="connBadge">
+                <div class="conn-dot" id="connDot"></div>
+                <span id="connLabel">Connecting…</span>
+            </div>
+            <button class="nav-btn" id="settingsBtn" title="Settings">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M19.14 12.94c.04-.3.06-.61.06-.94s-.02-.64-.07-.94l2.03-1.58a.49.49 0 0 0 .12-.61l-1.92-3.32a.49.49 0 0 0-.59-.22l-2.39.96a7 7 0 0 0-1.62-.94l-.36-2.54a.484.484 0 0 0-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96a.48.48 0 0 0-.59.22L2.74 8.87a.47.47 0 0 0 .12.61l2.03 1.58c-.05.3-.07.62-.07.94s.02.64.07.94l-2.03 1.58a.49.49 0 0 0-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.37 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.57 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32a.47.47 0 0 0-.12-.61zM12 15.6A3.6 3.6 0 1 1 12 8.4a3.6 3.6 0 0 1 0 7.2z"/>
+                </svg>
+                Settings
+            </button>
+        </div>
+    </nav>
+
+    <!-- ── Dashboard Grid ────────────────────────────────────── -->
+    <div class="dashboard">
+
+        <!-- ── Curtain Visualization ────────────────────────── -->
+        <div class="card panel-curtain">
+            <div class="card-header">
+                <span class="card-title">🪟 Curtain Visualization</span>
+                <div class="state-pill s-stopped" id="statePill">
+                    <div class="state-dot"></div>
+                    <span id="statePillText">STOPPED</span>
+                </div>
+            </div>
+            <div class="card-body" style="padding: 10px;">
+                <div class="curtain-scene-wrap">
+                    <div class="curtain-frame">
+                        <div class="window-bg">
+                            <div class="window-icon">☀️</div>
+                        </div>
+                        <!-- Curtain rod -->
+                        <div class="curtain-rod">
+                            <div class="rod-end left"></div>
+                            <div class="rod-end right"></div>
+                        </div>
+                        <!-- Curtain panels -->
+                        <div class="curtain-panels">
+                            <div class="curtain-panel left s-closed" id="curtainLeft"></div>
+                            <div class="curtain-panel right s-closed" id="curtainRight"></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="last-cmd-info" id="lastCmdInfo">No command sent yet</div>
+            </div>
+        </div>
+
+        <!-- ── Controls Panel ───────────────────────────────── -->
+        <div class="card panel-controls">
+            <div class="card-header">
+                <span class="card-title">⚡ Controls</span>
+            </div>
+            <div class="card-body">
+
+                <!-- Manual buttons -->
+                <div class="section-label">Manual Control</div>
+                <div class="motor-btns">
+                    <button class="motor-btn open-btn" id="btnOpen">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M18 8l4 4-4 4M6 8l-4 4 4 4M14 4l-4 16"/>
+                        </svg>
+                        OPEN
+                    </button>
+                    <button class="motor-btn stop-btn" id="btnStop">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+                            <rect x="6" y="6" width="12" height="12" rx="2"/>
+                        </svg>
+                        STOP
+                    </button>
+                    <button class="motor-btn close-btn" id="btnClose">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M6 8l-4 4 4 4M18 8l4 4-4 4M8 12h8"/>
+                        </svg>
+                        CLOSE
+                    </button>
+                </div>
+
+                <!-- Divider -->
+                <div class="settings-divider">Camera Gesture Mode</div>
+
+                <!-- Camera toggle -->
+                <div class="camera-row">
+                    <div class="camera-info">
+                        <div class="camera-label">🎥 Gesture Control</div>
+                        <div class="camera-sub" id="cameraSub">Enable hand gesture detection</div>
+                    </div>
+                    <label class="toggle-switch">
+                        <input type="checkbox" id="cameraToggle">
+                        <span class="toggle-track"></span>
+                    </label>
+                </div>
+
+                <!-- Gesture display -->
+                <div class="gesture-display">
+                    <span style="color: var(--text-2); font-size: 0.75rem;">Detected Gesture</span>
+                    <span class="gesture-val g-neutral" id="gestureVal">—</span>
+                </div>
+
+                <!-- Cooldown bar -->
+                <div class="cooldown-wrap">
+                    <div class="cooldown-label">
+                        <span>Debounce cooldown</span>
+                        <span id="cooldownPct">Ready</span>
+                    </div>
+                    <div class="cooldown-bar">
+                        <div class="cooldown-fill" id="cooldownFill"></div>
+                    </div>
+                </div>
+
+                <!-- Divider -->
+                <div class="settings-divider">Connection</div>
+
+                <!-- UDP status -->
+                <div class="udp-row">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" style="opacity:0.5">
+                        <path d="M1 6v16l7-4 8 4 7-4V2l-7 4-8-4-7 4zm7-2l8 4V22l-8-4V4z"/>
+                    </svg>
+                    <span id="udpTarget">—</span>
+                    <span style="flex:1"></span>
+                    <span id="udpStatus" class="udp-ok">●</span>
+                    <span id="udpStatusText" style="font-size:0.7rem; color:var(--text-3)">—</span>
+                </div>
+
+            </div>
+        </div>
+
+        <!-- ── Camera Feed Panel ─────────────────────────────── -->
+        <div class="card panel-camera">
+            <div class="card-header">
+                <span class="card-title">📷 Camera Feed</span>
+                <span style="font-size:0.7rem; color:var(--text-3)" id="feedStatus">Disabled</span>
+            </div>
+            <div class="card-body" style="padding: 8px;">
+                <div class="camera-feed-wrap" id="feedWrap">
+                    <div class="camera-placeholder" id="cameraPlaceholder">
+                        <svg width="40" height="40" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M12 8c-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4-1.79-4-4-4zm-8 0H2v12a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V8h-2a3 3 0 0 1-2.83-2H8.83A3 3 0 0 1 6 8H4zM20 4h-3.17A3 3 0 0 0 14 2H10a3 3 0 0 0-2.83 2H4a2 2 0 0 0-2 2v1h20V6a2 2 0 0 0-2-2z"/>
+                        </svg>
+                        Enable gesture mode to start camera
+                    </div>
+                    <img id="cameraImg" src="" alt="Camera feed" style="display:none;">
+                </div>
+            </div>
+        </div>
+
+    </div><!-- end .dashboard -->
+</div><!-- end .app-container -->
+
+<!-- ── Settings Slide Panel (Navis training-panel style) ─────── -->
+<aside class="settings-panel" id="settingsPanel">
+    <div class="panel-header">
+        <h2>⚙ SETTINGS</h2>
+        <button class="close-panel-btn" id="closePanelBtn">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/>
+            </svg>
+        </button>
+    </div>
+    <div class="panel-body">
+        <div class="form-group">
+            <label for="cfgIp">ESP32 IP Address</label>
+            <input type="text" id="cfgIp" placeholder="192.168.1.100">
+        </div>
+        <div class="form-group">
+            <label for="cfgPort">UDP Port</label>
+            <input type="number" id="cfgPort" placeholder="4210">
+        </div>
+        <div class="form-group">
+            <label for="cfgCam">Camera Index</label>
+            <input type="number" id="cfgCam" placeholder="0" min="0" max="5">
+        </div>
+        <div class="form-group">
+            <label for="cfgDebounce">Debounce (seconds)</label>
+            <input type="number" id="cfgDebounce" placeholder="2.0" step="0.5" min="0.5" max="10">
+        </div>
+        <button class="btn-save" id="btnSaveConfig">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M17 3H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V7l-4-4zm-5 16a3 3 0 1 1 0-6 3 3 0 0 1 0 6zm3-10H5V5h10v4z"/>
+            </svg>
+            Save & Apply
+        </button>
+    </div>
+</aside>
+
+<!-- Toast container -->
+<div class="toast-container" id="toastContainer"></div>
+
+<!-- Socket.IO (same CDN pattern as Navis) -->
+<script src="https://cdn.socket.io/4.7.4/socket.io.min.js"></script>
+<script src="/static/js/app.js"></script>
+</body>
+</html>
